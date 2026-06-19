@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#FFE9F0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Dreamy Doorsteps</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="apple-touch-icon" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Persistent top bar -->
+  <header id="topbar" class="hidden">
+    <button class="icon-btn" id="btn-home" aria-label="Town map">🏘️</button>
+    <div class="wallet">
+      <span class="coin">✨</span>
+      <span id="wallet-amount">0</span>
+    </div>
+    <button class="icon-btn" id="btn-menu" aria-label="Menu">≡</button>
+  </header>
+
+  <main id="app">
+
+    <!-- ============== ONBOARDING ============== -->
+    <section class="screen" id="screen-welcome">
+      <div class="welcome-stack">
+        <div class="logo-mark">
+          <span class="door-icon">🚪</span>
+        </div>
+        <h1 class="display-title">Dreamy<br/>Doorsteps</h1>
+        <p class="tagline">A cozy little town. Yours to build.</p>
+        <button class="btn primary big" id="start-btn">Start your story</button>
+        <button class="btn ghost small" id="continue-btn" hidden>Continue where you left off</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-pick-character" hidden>
+      <div class="screen-header">
+        <h2>Pick your character</h2>
+        <p class="hint">You can change your outfit later in the Closet.</p>
+      </div>
+      <div class="character-grid" id="character-grid"></div>
+      <div class="screen-footer">
+        <button class="btn primary" id="char-next" disabled>Next</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-name" hidden>
+      <div class="screen-header">
+        <h2>What's your name?</h2>
+        <p class="hint">First name only. No surnames.</p>
+      </div>
+      <input type="text" id="name-input" maxlength="14" placeholder="Type a name..." autocomplete="off" />
+      <div class="screen-footer">
+        <button class="btn ghost" data-back="screen-pick-character">Back</button>
+        <button class="btn primary" id="name-next" disabled>Next</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-pick-home" hidden>
+      <div class="screen-header">
+        <h2>Choose your first home</h2>
+        <p class="hint">You'll unlock more doorsteps as you play.</p>
+      </div>
+      <div class="home-grid" id="home-grid">
+        <button class="home-card" data-home="rose">
+          <div class="house-art rose-house"></div>
+          <span>Rose Cottage</span>
+        </button>
+        <button class="home-card" data-home="mint">
+          <div class="house-art mint-house"></div>
+          <span>Mint Cottage</span>
+        </button>
+        <button class="home-card" data-home="lavender">
+          <div class="house-art lavender-house"></div>
+          <span>Lavender Cottage</span>
+        </button>
+      </div>
+      <div class="screen-footer">
+        <button class="btn ghost" data-back="screen-name">Back</button>
+        <button class="btn primary" id="home-next" disabled>Move in</button>
+      </div>
+    </section>
+
+    <!-- ============== TOWN MAP ============== -->
+    <section class="screen" id="screen-town" hidden>
+      <div class="town-greeting">
+        <p>Welcome back, <span id="hello-name">friend</span> ✨</p>
+        <p class="hint" id="town-hint">Pick a doorstep to visit.</p>
+      </div>
+      <div class="town-map" id="town-map"></div>
+    </section>
+
+    <!-- ============== ARCADE ============== -->
+    <section class="screen" id="screen-arcade" hidden>
+      <div class="screen-header">
+        <h2>The Arcade</h2>
+        <p class="hint">Play to earn Dreamies ✨</p>
+      </div>
+      <div class="arcade-grid">
+        <button class="arcade-card" data-game="bubble">
+          <div class="arcade-emoji">🫧</div>
+          <h3>Bubble Pop</h3>
+          <p>Tap matching bubbles before they float away.</p>
+        </button>
+        <button class="arcade-card" data-game="snake">
+          <div class="arcade-emoji">🐛</div>
+          <h3>Snake Garden</h3>
+          <p>Eat flowers. Don't bite your tail.</p>
+        </button>
+        <button class="arcade-card" data-game="stack">
+          <div class="arcade-emoji">🧁</div>
+          <h3>Sweet Stack</h3>
+          <p>Stack cupcakes as high as you can.</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============== MINIGAME HOST ============== -->
+    <section class="screen game-screen" id="screen-game" hidden>
+      <div class="game-bar">
+        <button class="btn ghost small" id="game-quit">Quit</button>
+        <div class="game-score">
+          <span class="hint">Score</span>
+          <span id="game-score-num">0</span>
+        </div>
+        <div class="game-score">
+          <span class="hint">Earned</span>
+          <span id="game-earned">0 ✨</span>
+        </div>
+      </div>
+      <canvas id="game-canvas"></canvas>
+      <div class="game-over hidden" id="game-over">
+        <h2>Nice run!</h2>
+        <p>Final score: <span id="over-score">0</span></p>
+        <p class="earned-line">You earned <strong><span id="over-earned">0</span> ✨</strong></p>
+        <div class="screen-footer">
+          <button class="btn ghost" id="over-quit">Back to Arcade</button>
+          <button class="btn primary" id="over-again">Play again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== SHOP ============== -->
+    <section class="screen" id="screen-shop" hidden>
+      <div class="screen-header">
+        <h2 id="shop-title">Shop</h2>
+        <p class="hint" id="shop-sub">Tap an item to buy.</p>
+      </div>
+      <div class="shop-grid" id="shop-grid"></div>
+    </section>
+
+    <!-- ============== INVENTORY ============== -->
+    <section class="screen" id="screen-inventory" hidden>
+      <div class="screen-header">
+        <h2>Inventory</h2>
+        <p class="hint">Everything you own.</p>
+      </div>
+      <div class="tabs" id="inv-tabs">
+        <button class="tab active" data-tab="furniture">Furniture</button>
+        <button class="tab" data-tab="outfits">Outfits</button>
+        <button class="tab" data-tab="pet">Pets</button>
+        <button class="tab" data-tab="food">Food</button>
+        <button class="tab" data-tab="plant">Plants</button>
+      </div>
+      <div class="inv-grid" id="inv-grid"></div>
+    </section>
+
+    <!-- ============== HOME / DECORATE ============== -->
+    <section class="screen" id="screen-home" hidden>
+      <div class="screen-header">
+        <h2 id="home-title">Your Home</h2>
+        <p class="hint">Tap a furniture slot, then pick an item to place it.</p>
+      </div>
+      <div class="room" id="room">
+        <div class="room-wall" id="room-wall"></div>
+        <div class="room-floor" id="room-floor"></div>
+        <div class="room-slots" id="room-slots"></div>
+      </div>
+      <div class="room-tools">
+        <button class="btn ghost" id="btn-wall">🎨 Wallpaper</button>
+        <button class="btn ghost" id="btn-floor">🟫 Floor</button>
+        <button class="btn ghost" id="btn-clear">↺ Clear room</button>
+      </div>
+    </section>
+
+    <!-- ============== CLOSET ============== -->
+    <section class="screen" id="screen-closet" hidden>
+      <div class="screen-header">
+        <h2>Closet</h2>
+        <p class="hint">Tap an outfit to wear it.</p>
+      </div>
+      <div class="closet-preview">
+        <img id="closet-img" alt="Your character"/>
+        <p class="char-name" id="closet-name"></p>
+      </div>
+      <div class="closet-grid" id="closet-grid"></div>
+    </section>
+
+    <!-- ============== LIBRARY ============== -->
+    <section class="screen" id="screen-library" hidden>
+      <div class="screen-header">
+        <h2>The Library</h2>
+        <p class="hint">Answer a question, earn ✨.</p>
+      </div>
+      <div class="quiz-card" id="quiz-card">
+        <p class="quiz-subject" id="quiz-subject">Maths</p>
+        <h3 class="quiz-question" id="quiz-question">Loading...</h3>
+        <div class="quiz-options" id="quiz-options"></div>
+        <p class="quiz-feedback" id="quiz-feedback"></p>
+      </div>
+      <div class="screen-footer">
+        <button class="btn primary" id="quiz-next" hidden>Next question</button>
+      </div>
+    </section>
+
+    <!-- ============== MENU ============== -->
+    <section class="screen" id="screen-menu" hidden>
+      <div class="screen-header">
+        <h2>Menu</h2>
+      </div>
+      <div class="menu-list">
+        <button class="menu-item" data-goto="screen-home">🏠 Visit my home</button>
+        <button class="menu-item" data-goto="screen-closet">👗 Closet</button>
+        <button class="menu-item" data-goto="screen-inventory">🎒 Inventory</button>
+        <button class="menu-item" data-goto="screen-quests">📋 Daily quests</button>
+        <button class="menu-item" data-goto="screen-settings">⚙️ Settings</button>
+      </div>
+    </section>
+
+    <!-- ============== QUESTS ============== -->
+    <section class="screen" id="screen-quests" hidden>
+      <div class="screen-header">
+        <h2>Daily quests</h2>
+        <p class="hint">Reset every 24 hours.</p>
+      </div>
+      <div class="quest-list" id="quest-list"></div>
+    </section>
+
+    <!-- ============== SETTINGS ============== -->
+    <section class="screen" id="screen-settings" hidden>
+      <div class="screen-header">
+        <h2>Settings</h2>
+      </div>
+      <div class="settings-list">
+        <div class="setting-row">
+          <label for="timer-select">Daily play timer</label>
+          <select id="timer-select">
+            <option value="0">Unlimited</option>
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="60">60 min</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span>Today's play time</span>
+          <span id="time-played">0 min</span>
+        </div>
+        <button class="btn ghost danger" id="reset-btn">Reset everything</button>
+        <p class="hint center">Made with care for cozy adventures.<br/>v1.0</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast for purchase/reward feedback -->
+  <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+  <!-- Modal for confirm dialogs -->
+  <div id="modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="modal-title">Are you sure?</h3>
+      <p id="modal-body"></p>
+      <div class="modal-actions">
+        <button class="btn ghost" id="modal-no">Cancel</button>
+        <button class="btn primary" id="modal-yes">Yes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sub-shop picker (wallpaper/floor) -->
+  <div id="picker-backdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <h3 id="picker-title">Pick one</h3>
+      <div class="picker-grid" id="picker-grid"></div>
+      <button class="btn ghost" id="picker-close">Close</button>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="games.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
